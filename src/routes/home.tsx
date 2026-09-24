@@ -185,7 +185,7 @@ export default function Home() {
 
 	return (
 		<div className="relative flex flex-col items-center w-full min-h-full">
-			<title>Build</title>
+			<title>Integra Demo Engine · Advanced</title>
 			<div className="home-atmosphere" aria-hidden>
 				<div className="home-atmosphere__spotlight" />
 			</div>

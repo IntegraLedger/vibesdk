@@ -50,7 +50,7 @@
 		'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-funky-mono: 'Departure Mono', var(--font-mono);
 
-	--color-brand: #ff3d00;
+	--color-brand: #1f4fb0; /* Integra */
 	--color-text: #000;
 }
 
@@ -69,8 +69,8 @@
 		--build-chat-colors-border-secondary: #eeeeee;
 		--build-chat-colors-border-tertiary: #eeeeee;
 		--build-chat-colors-danger: #950000cc;
-		--build-chat-colors-brand-primary: #f6821f;
-		--build-chat-colors-brand-light: #faae42;
+		--build-chat-colors-brand-primary: #1f4fb0; /* Integra: the engine's accent */
+		--build-chat-colors-brand-light: #8fb6ff; /* Integra: the engine's light accent */
 		--build-chat-colors-text-inverted: #ffffff;
 		--build-chat-colors-text-primary: #0a0a0a;
 		--build-chat-colors-text-secondary: #171717;
@@ -89,8 +89,8 @@
 		--build-chat-colors-border-primary: #393939;
 		--build-chat-colors-border-secondary: #454746;
 		--build-chat-colors-border-tertiary: #454746;
-		--build-chat-colors-brand-primary: #f6821f;
-		--build-chat-colors-brand-light: #faae42;
+		--build-chat-colors-brand-primary: #1f4fb0; /* Integra: the engine's accent */
+		--build-chat-colors-brand-light: #8fb6ff; /* Integra: the engine's light accent */
 		--build-chat-colors-text-inverted: #000000;
 		--build-chat-colors-text-primary: #ffffff;
 		--build-chat-colors-text-secondary: #cdcaca;
