@@ -18,6 +18,7 @@ import { setupLimitsRoutes } from './limitsRoutes';
 import { Hono } from "hono";
 import { AppEnv } from "../../types/appenv";
 import { setupStatusRoutes } from './statusRoutes';
+import { setupIntegraRoutes } from './integraRoutes';
 
 export function setupRoutes(app: Hono<AppEnv>): void {
     // Health check route
@@ -30,6 +31,8 @@ export function setupRoutes(app: Hono<AppEnv>): void {
 
     // Platform status routes (public)
     setupStatusRoutes(app);
+    // Integra's door: a guest session and a generation from the engine's description (integraRoutes.ts).
+    setupIntegraRoutes(app);
 
     // Platform capabilities routes (public)
     setupCapabilitiesRoutes(app);
