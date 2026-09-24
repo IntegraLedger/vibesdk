@@ -4,7 +4,7 @@
  */
  {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "vibesdk-production",
+	"name": "integra-code-studio",
 	"main": "worker/index.ts",
 	// Resolve the vendored artifacts-viewer server entrypoints for the Worker
 	// bundle. `wrangler deploy` uses esbuild (not Vite), so it does not read
@@ -78,47 +78,11 @@
 		"binding": "AI",
         "remote": true
 	},
-	"browser": {
-		"binding": "BROWSER",
-		"remote": true
-	},
-    "dispatch_namespaces": [
-        {
-            "binding": "DISPATCHER",
-            "namespace": "vibesdk-default-namespace",
-            "remote": true
-        }
-    ],
-    "artifacts": [
-        {
-            "binding": "ARTIFACTS",
-            "namespace": "vibesdk-production"
-        }
-    ],
-	"containers": [
-		{
-			"class_name": "UserAppSandboxService",
-			"image": "./SandboxDockerfile",
-            // "image": "registry.cloudflare.com/vibesdk-production-userappsandboxservice:cfe197fc",
-            // Altering max_instances value will have no effect. Please use the MAX_SANDBOX_INSTANCES var instead.
-			"max_instances": 1400,
-            // ATTENTION: Altering instance_type value will have no effect. Please use the SANDBOX_INSTANCE_TYPE var instead.
-            "instance_type": {
-                "vcpu": 4,
-                "memory_mib": 8192,
-                "disk_mb": 10240
-            },
-            "rollout_step_percentage": 100,
-			"ssh": {
-				"enabled": true
-			}
-		}
-	],
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "vibesdk-db",
-			"database_id": "c4721a2b-b96a-428a-8b2a-b3d255b307e9",
+			"database_name": "integra-code-studio-db",
+			"database_id": "129eb6f8-f2f3-4726-88da-e21dfe25192d",
 			"migrations_dir": "migrations"
 		}
 	],
@@ -158,13 +122,13 @@
     "r2_buckets": [
       {
         "binding": "TEMPLATES_BUCKET",
-        "bucket_name": "vibesdk-templates"
+        "bucket_name": "integra-code-studio-templates"
       }
     ],
     "kv_namespaces": [
         {
             "binding": "VibecoderStore",
-            "id": "f066f3c2e4824981b48e8586c04db9c1"
+            "id": "1c3d85feb3be4ade90612aca9bbaa4af"
         }
     ],
     // "placement": {
@@ -205,22 +169,14 @@
 	],
 	"routes": [
         {
-            "pattern": "build.cloudflare.dev",
+            "pattern": "code.integraledger.com",
             "custom_domain": true
         },
-        {
-            "pattern": "*build-preview.cloudflare.dev/*",
-            "custom_domain": false,
-            "zone_id": "db01fac4261b2604aacad8410443a3e2"
-        }
+        { "pattern": "*app.integraledger.net/*", "custom_domain": false, "zone_id": "22cc7614299d8a50e67d27f7d66626a8" }
     ],
 	"vars": {
         "TEMPLATES_REPOSITORY": "https://github.com/cloudflare/vibesdk-templates",
-        "DISPATCH_NAMESPACE": "vibesdk-default-namespace",
-        "CLOUDFLARE_AI_GATEWAY": "vibesdk-gateway",
-        // Cloudflare Artifacts namespace for the read-only Repo viewer proxy.
-        // Must match the `artifacts` binding namespace above.
-        "ARTIFACTS_NAMESPACE": "vibesdk-production",
+        "DISPATCH_NAMESPACE": "",
         "PLATFORM_CAPABILITIES": {
             "features": {
                 "app": {
@@ -235,7 +191,6 @@
             },
             "version": "1.0.0"
         },
-        "CUSTOM_DOMAIN": "",
         "MAX_SANDBOX_INSTANCES": "10",
         "SANDBOX_INSTANCE_TYPE": "standard-3",
         "DEV_BROWSER_SIDECAR_URL": "http://127.0.0.1:9223",

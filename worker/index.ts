@@ -304,6 +304,12 @@ const worker = {
 				return app.fetch(request, env, ctx);
 			}
 			
+			// INTEGRA (2026-09-24): the front door is the engine's, never this app's stock page. Until this studio's own
+			// screens are Integra's and it runs without a sign-in, "/" sends a visitor to the engine's Advanced tier; the
+			// app's other pages stay reachable by address for the people working on it.
+			if (pathname === '/') {
+				return Response.redirect('https://engine.integraledger.com/?tier=advanced', 302);
+			}
 			// Serve static assets for all other non-API routes from the ASSETS binding.
 			if (!pathname.startsWith('/api/')) {
 				return env.ASSETS.fetch(request);
