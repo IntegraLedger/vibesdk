@@ -2,7 +2,6 @@ import React from 'react';
 import {
 	BookmarkSimpleIcon,
 	CaretRightIcon,
-	CompassIcon,
 	GlobeHemisphereWestIcon,
 	LockKeyIcon,
 	MagnifyingGlassIcon,
@@ -12,8 +11,6 @@ import {
 import { isValid } from 'date-fns';
 import { Link, useLocation, useNavigate } from 'react-router';
 import {
-	Button,
-	CloudflareLogo,
 	InputGroup,
 	Sidebar,
 	cn,
@@ -146,6 +143,15 @@ function AppMenuItem({
 	);
 }
 
+/** Integra's mark, as the engine draws it: the initial on a rounded square in the brand blue. */
+function IntegraMark({ className }: { className?: string }) {
+	return (
+		<span aria-hidden className={cn('grid place-items-center rounded-lg bg-[#1f4fb0] text-[13px] font-semibold text-white', className)}>
+			I
+		</span>
+	);
+}
+
 export function AppSidebar() {
 	const { user } = useAuth();
 	const navigate = useNavigate();
@@ -262,10 +268,7 @@ export function AppSidebar() {
 			>
 				{isCollapsed ? (
 					<div className="relative flex size-9 items-center justify-center">
-						<CloudflareLogo
-							variant="glyph"
-							className="size-7 shrink-0 transition-opacity group-hover/sidebar:opacity-0 group-focus-within/sidebar:opacity-0"
-						/>
+						<IntegraMark className="size-7 shrink-0 transition-opacity group-hover/sidebar:opacity-0 group-focus-within/sidebar:opacity-0" />
 						<Sidebar.Trigger
 							aria-label="Open sidebar"
 							className="absolute inset-0 flex size-9 items-center justify-center opacity-0 transition-opacity group-hover/sidebar:opacity-100 group-focus-within/sidebar:opacity-100"
@@ -277,12 +280,9 @@ export function AppSidebar() {
 							to="/"
 							className="flex min-w-0 flex-1 items-center gap-2.5 text-kumo-strong"
 						>
-							<CloudflareLogo
-								variant="glyph"
-								className="size-7 shrink-0"
-							/>
-							<span className="min-w-0 flex-1 truncate text-base font-black font-funky-mono uppercase tracking-wide">
-								Build
+							<IntegraMark className="size-7 shrink-0" />
+							<span className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-tight">
+								Integra Demo Engine
 							</span>
 						</Link>
 						<Sidebar.Trigger
@@ -311,24 +311,7 @@ export function AppSidebar() {
 								}
 							/>
 						)}
-						<Button
-							shape="square"
-							size="base"
-							variant="ghost"
-							id="discover-link"
-							aria-label="Discover"
-							title="Discover"
-							aria-current={
-								pathname === '/discover' ? 'page' : undefined
-							}
-							onClick={() => navigate('/discover')}
-							className={cn(
-								'text-kumo-subtle hover:text-kumo-default',
-								pathname === '/discover' &&
-									'bg-(--sidebar-active-bg) text-kumo-default',
-							)}
-							icon={<CompassIcon className="size-4" />}
-						/>
+
 					</div>
 				) : (
 					<div className="flex flex-col gap-1.5">
@@ -351,20 +334,7 @@ export function AppSidebar() {
 								</OrangeButton>
 							)}
 
-							<Sidebar.MenuButton
-								active={pathname === '/discover'}
-								icon={
-									<CompassIcon
-										weight="duotone"
-										className="size-4 -mr-1"
-									/>
-								}
-								id="discover-link"
-								tooltip="Discover"
-								onClick={() => navigate('/discover')}
-							>
-								Discover
-							</Sidebar.MenuButton>
+
 						</Sidebar.Menu>
 
 						{user && (
@@ -599,11 +569,7 @@ export function AppSidebar() {
 									: 'h-8! w-full justify-start gap-2 text-sm',
 							)}
 							icon={
-								<CloudflareLogo
-									variant="glyph"
-									color="white"
-									className="size-6 shrink-0"
-								/>
+								<IntegraMark className="size-7 shrink-0" />
 							}
 						>
 							{!isCollapsed ? (

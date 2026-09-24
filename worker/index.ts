@@ -307,7 +307,9 @@ const worker = {
 			// INTEGRA (2026-09-24): the front door is the engine's, never this app's stock page. Until this studio's own
 			// screens are Integra's and it runs without a sign-in, "/" sends a visitor to the engine's Advanced tier; the
 			// app's other pages stay reachable by address for the people working on it.
-			if (pathname === '/') {
+			// Only a generation's own page is served here; every other page of the stock app (discover, profile,
+			// settings, the apps list, sign-in) goes to the engine (Berger, 2026-09-24: none of it is ours to show).
+			if (!pathname.startsWith('/chat/') && !pathname.startsWith('/assets/') && !pathname.startsWith('/fonts/') && !/\.[a-z0-9]{2,5}$/i.test(pathname)) {
 				return Response.redirect('https://engine.integraledger.com/?tier=advanced', 302);
 			}
 			// Serve static assets for all other non-API routes from the ASSETS binding.

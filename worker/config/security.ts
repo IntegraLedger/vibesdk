@@ -209,7 +209,8 @@ export function getSecureHeadersConfig(env: Env): SecureHeadersConfig {
             mediaSrc: ["'self'"],
             workerSrc: ["'self'", "blob:"],
             formAction: ["'self'"],
-            frameAncestors: ["'none'"],
+            // INTEGRA (2026-09-24): the engine embeds a generation's page in its own right pane, so the engine may frame this app.
+            frameAncestors: ["'self'", 'https://engine.integraledger.com', 'https://engine.demos.integraledger.net'],
             baseUri: ["'self'"],
             manifestSrc: ["'self'"],
             upgradeInsecureRequests: !isDevelopment ? [] : undefined
@@ -221,7 +222,8 @@ export function getSecureHeadersConfig(env: Env): SecureHeadersConfig {
             : 'max-age=31536000; includeSubDomains; preload',
         
         // X-Frame-Options - Prevent clickjacking
-        xFrameOptions: 'DENY',
+        // INTEGRA: not DENY — frame-ancestors above names who may frame this app (X-Frame-Options cannot name a site).
+        xFrameOptions: false,
         
         // X-Content-Type-Options - Prevent MIME sniffing
         xContentTypeOptions: 'nosniff',

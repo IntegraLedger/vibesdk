@@ -11,7 +11,7 @@ import { AppEnv } from '../../types/appenv';
 import { AuthConfig, setAuthLevel } from '../../middleware/auth/routeAuth';
 import { AuthService } from '../../database/services/AuthService';
 import { SessionService } from '../../database/services/SessionService';
-import { setSecureAuthCookies } from '../../utils/authUtils';
+import { createSecureCookie } from '../../utils/authUtils';
 import { validateToken } from '../../middleware/auth/auth';
 import { CodingAgentController } from '../controllers/agent/controller';
 import type { RouteContext } from '../types/route-context';
@@ -86,7 +86,9 @@ export function setupIntegraRoutes(app: Hono<AppEnv>): void {
             const agentId = typeof first?.['agentId'] === 'string' ? (first['agentId'] as string) : null;
             const to = agentId === null ? `${ENGINE}/?tier=advanced&studio=could-not-start` : `${origin}/chat/${agentId}`;
             const response = new Response(null, { status: 302, headers: { location: to } });
-            setSecureAuthCookies(response, { accessToken: token, accessTokenExpiry: SessionService.config.sessionTTL });
+            // The engine embeds the generation's page in a frame on its own address, so this cookie must travel into a
+            // third-party frame: SameSite=None (with Secure), not the app's usual Lax.
+            response.headers.append('Set-Cookie', createSecureCookie({ name: 'accessToken', value: token, maxAge: SessionService.config.sessionTTL, sameSite: 'None' }));
             return response;
         } catch (error) {
             console.error('integra start failed', error);
