@@ -12,6 +12,9 @@ import { AuthConfig, setAuthLevel } from '../../middleware/auth/routeAuth';
 import { AuthService } from '../../database/services/AuthService';
 import { SessionService } from '../../database/services/SessionService';
 import { setSecureAuthCookies } from '../../utils/authUtils';
+import { validateToken } from '../../middleware/auth/auth';
+import { CodingAgentController } from '../controllers/agent/controller';
+import type { RouteContext } from '../types/route-context';
 
 const ENGINE = 'https://engine.integraledger.com';
 const MAX_PROMPT = 4000;
@@ -58,11 +61,27 @@ export function setupIntegraRoutes(app: Hono<AppEnv>): void {
             );
             const token = result.accessToken;
             const origin = new URL(request.url).origin;
-            const started = await fetch(`${origin}/api/agent`, {
-                method: 'POST',
-                headers: { 'content-type': 'application/json', accept: 'application/json', authorization: `Bearer ${token}`, cookie: `accessToken=${token}` },
-                body: JSON.stringify({ query: prompt }),
-            });
+            // The generation is started the way the app's own handler starts it, as the guest, in this same Worker: no
+            // second request, so no CSRF token to carry and no door to knock on.
+            const session = await validateToken(token, env);
+            if (session === null) throw new Error('the guest session did not validate');
+            const routeContext: RouteContext = {
+                user: session.user,
+                sessionId: session.sessionId,
+                config: c.get('config'),
+                pathParams: {},
+                queryParams: new URL(request.url).searchParams,
+            };
+            const started = await CodingAgentController.startCodeGeneration(
+                new Request(`${origin}/api/agent`, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json', accept: 'application/json', authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ query: prompt }),
+                }),
+                env,
+                c.executionCtx,
+                routeContext,
+            );
             const first = started.ok ? await firstJson(started) : null;
             const agentId = typeof first?.['agentId'] === 'string' ? (first['agentId'] as string) : null;
             const to = agentId === null ? `${ENGINE}/?tier=advanced&studio=could-not-start` : `${origin}/chat/${agentId}`;
