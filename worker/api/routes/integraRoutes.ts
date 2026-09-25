@@ -18,6 +18,9 @@ import type { RouteContext } from '../types/route-context';
 
 const ENGINE = 'https://engine.integraledger.com';
 const MAX_PROMPT = 4000;
+const MAX_BRIEF = 12000;
+/** The only places a brief is read from: the engine's own addresses. */
+const BRIEF_HOSTS = new Set(['engine.integraledger.com', 'engine.demos.integraledger.net']);
 
 /** The first JSON object a streamed answer carries (the agent's id is in it), read without waiting for the rest. */
 async function firstJson(res: Response): Promise<Record<string, unknown> | null> {
@@ -48,8 +51,23 @@ export function setupIntegraRoutes(app: Hono<AppEnv>): void {
     const router = new Hono<AppEnv>();
 
     router.get('/start', setAuthLevel(AuthConfig.public), async (c) => {
-        const prompt = (c.req.query('prompt') ?? '').trim().slice(0, MAX_PROMPT);
-        if (prompt === '') return c.redirect(`${ENGINE}/?tier=advanced`, 302);
+        // THE BRIEF (2026-09-25): the engine composes what the studio receives and keeps it; the door is given its address
+        // (?brief=…, on the engine only) and reads it. A bare ?prompt= is still accepted for the people working on this.
+        let prompt = (c.req.query('prompt') ?? '').trim().slice(0, MAX_PROMPT);
+        const briefUrl = (c.req.query('brief') ?? '').trim();
+        if (briefUrl !== '') {
+            try {
+                const u = new URL(briefUrl);
+                if (u.protocol === 'https:' && BRIEF_HOSTS.has(u.hostname) && u.pathname.startsWith('/api/studio/brief/')) {
+                    const res = await fetch(u.toString(), { headers: { accept: 'application/json' } });
+                    const brief = res.ok ? ((await res.json()) as { prompt?: unknown }) : null;
+                    if (typeof brief?.prompt === 'string') prompt = brief.prompt.trim().slice(0, MAX_BRIEF);
+                }
+            } catch (error) {
+                console.error('integra brief could not be read', error);
+            }
+        }
+        if (prompt === '') return c.redirect(`${ENGINE}/?tier=advanced&studio=no-brief`, 302);
         const env = c.env;
         const request = c.req.raw;
         try {
